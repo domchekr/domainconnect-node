@@ -1,0 +1,42 @@
+name: ci
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        node: ["lts/hydrogen", "lts/iron", "21", "22"]
+
+    name: Node ${{ matrix.node }}
+
+    steps:
+      - name: Checkout 🛎
+        uses: actions/checkout@v4
+
+      - name: Setup node env 🏗
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+          cache: "npm"
+
+      - name: Install dependencies 👨🏻‍💻
+        run: npm ci
+
+      - name: Lint code 🧹
+        run: npm run lint
+
+      - name: Run tests 🧪
+        run: npm run test
+
+      - name: Run builds 🛠
+        run: npm run build
